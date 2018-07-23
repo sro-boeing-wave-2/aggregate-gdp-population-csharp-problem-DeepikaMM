@@ -7,32 +7,31 @@ namespace AggregateGDPPopulation.Tests
     public class UnitTest1
     {
         [Fact]
-        public void Test1()
+        public async void CheckForFileContents()
         {
-            //string[] expected = File.ReadAllLines(@"../../../../AggregateGDPPopulation.Tests/expected-output.json");
-            Class1 c = new Class1();
-            c.GenerateOutput();
-            //string[] actual = File.ReadAllLines(@"../../../../AggregateGDPPopulation/output/output.json");
-            
-            //gdp.CalculateAggregateGdp();
-            StreamReader FileRead = new StreamReader("../../../../AggregateGDPPopulation/output/output.json");
-            StreamReader ExpectedFileRead = new StreamReader("../../../expected-output.json");
-            string actual = FileRead.ReadToEnd();
+            AggregateGDP c = new AggregateGDP();
+            c.AggregateGdp();
+            string actual;
             string expected = String.Empty;
-            while (true)
+            using (StreamReader FileContentsByLine = new StreamReader("../../../../AggregateGDPPopulation/output/output.json"))
             {
-                try
+                actual = await FileContentsByLine.ReadToEndAsync();
+            }
+            using (StreamReader ActualFileContents = new StreamReader("../../../expected-output.json"))
+            {
+                while (true)
                 {
-                    string content = ExpectedFileRead.ReadLine().Trim();
-                    expected += content;
-                }
-                catch (Exception e)
-                {
-                    break;
+                    try
+                    {
+                        string content = await ActualFileContents.ReadLineAsync();
+                        expected += content.Trim();
+                    }
+                    catch (Exception)
+                    {
+                        break;
+                    }
                 }
             }
-            Console.WriteLine(actual);
-            Console.WriteLine(expected);
             Assert.Equal(expected, actual);
         }
     }
